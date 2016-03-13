@@ -24,8 +24,8 @@ EE_LDFLAGS += -L$(PS2SDK)/ee/lib -L$(PS2SDK)/ports/lib -L$(PS2DEV)/isjpcm/lib
 all: $(EE_BIN)
 
 install: $(EE_BIN)
-	mkdir -p $(PS2SDK)/ports/bin
-	cp -f $(EE_BIN) $(PS2SDK)/ports/bin/
+	mkdir -p $(DESTDIR)$(PS2SDK)/ports/bin
+	cp -f $(EE_BIN) $(DESTDIR)$(PS2SDK)/ports/bin/
 
 isjpcm.s:
 	bin2s $(PS2DEV)/isjpcm/bin/isjpcm.irx isjpcm.s isjpcm_irx
@@ -33,5 +33,5 @@ isjpcm.s:
 clean:
 	rm -f $(EE_OBJS) isjpcm.s $(EE_BIN)
 
-include $(PS2SDK)/samples/Makefile.pref
-include $(PS2SDK)/samples/Makefile.eeglobal
+include $(PS2SDK)/Defs.make
+include ../../../Makefile.eeglobal

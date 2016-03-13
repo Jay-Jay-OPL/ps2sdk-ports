@@ -14,15 +14,16 @@ all: $(EE_LIB)
 
 
 install: all
-	mkdir -p $(PS2SDK)/ports/include/
-	mkdir -p $(PS2SDK)/ports/lib
-	cp -f $(EE_LIB) $(PS2SDK)/ports/lib
-	cp -f include/*.h $(PS2SDK)/ports/include/
-	cp -f tools/genromfs/genromfs $(PS2SDK)/bin/
+	mkdir -p $(DESTDIR)$(PS2SDK)/bin/
+	mkdir -p $(DESTDIR)$(PS2SDK)/ports/include/
+	mkdir -p $(DESTDIR)$(PS2SDK)/ports/lib
+	cp -f $(EE_LIB) $(DESTDIR)$(PS2SDK)/ports/lib
+	cp -f include/*.h $(DESTDIR)$(PS2SDK)/ports/include/
+	cp -f tools/genromfs/genromfs $(DESTDIR)$(PS2SDK)/bin/
 
 clean:
 	rm -f $(EE_OBJS) $(EE_LIB)
 	$(MAKE) -C tools/genromfs clean
 
-include Makefile.pref
-include Makefile.eeglobal 
+include $(PS2SDK)/Defs.make
+include ../Makefile.eeglobal

@@ -168,14 +168,13 @@ $(LIB_SDLMAIN): $(SDLMAIN_OBJS)
 	$(EE_AR) cru $(LIB_SDLMAIN) $(SDLMAIN_OBJS)
 
 install: all
-	mkdir -p $(PS2SDK)/ports/include/SDL
-	mkdir -p $(PS2SDK)/ports/lib
-	cp -f $(LIB_SDL) $(LIB_SDLMAIN) $(PS2SDK)/ports/lib
-	cp -f ../include/*.h $(PS2SDK)/ports/include/SDL
+	mkdir -p $(DESTDIR)$(PS2SDK)/ports/include/SDL
+	mkdir -p $(DESTDIR)$(PS2SDK)/ports/lib
+	cp -f $(LIB_SDL) $(LIB_SDLMAIN) $(DESTDIR)$(PS2SDK)/ports/lib
+	cp -f ../include/*.h $(DESTDIR)$(PS2SDK)/ports/include/SDL
 
 clean:
 	rm -f $(LIB_SDL) $(LIB_SDLMAIN) $(SDL_OBJS)
 
-include ../Makefile.pref
-include ../Makefile.eeglobal
-
+include $(PS2SDK)/Defs.make
+include ../../Makefile.eeglobal

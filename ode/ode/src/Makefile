@@ -21,14 +21,13 @@ $(LIB_ODE): $(ODE_OBJS)
 	$(EE_AR) cru $(LIB_ODE) $(ODE_OBJS)
 
 install: all
-	mkdir -p $(PS2SDK)/ports/include/ode
-	mkdir -p $(PS2SDK)/ports/lib
-	cp -f $(LIB_ODE) $(PS2SDK)/ports/lib
-	cp -f ../../include/ode/*.h $(PS2SDK)/ports/include/ode
+	mkdir -p $(DESTDIR)$(PS2SDK)/ports/include/ode
+	mkdir -p $(DESTDIR)$(PS2SDK)/ports/lib
+	cp -f $(LIB_ODE) $(DESTDIR)$(PS2SDK)/ports/lib
+	cp -f ../../include/ode/*.h $(DESTDIR)$(PS2SDK)/ports/include/ode
 
 clean:
 	rm -f $(LIB_ODE) $(LIB_ODEMAIN) $(ODE_OBJS)
 
-include ../../Makefile.pref
-include ../../Makefile.eeglobal
-
+include $(PS2SDK)/Defs.make
+include ../../../Makefile.eeglobal

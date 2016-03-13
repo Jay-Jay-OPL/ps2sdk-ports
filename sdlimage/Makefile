@@ -38,7 +38,7 @@ SDLIMAGE_OBJS =	IMG.o			\
 
 EMBEDDED += \
 	$(PS2SDK)/ports/lib/libpng.a \
-	$(PS2SDK)/ports/lib/libjpg.a \
+	$(PS2SDK)/ports/lib/libjpeg.a \
 	$(PS2SDK)/ports/lib/libtiff.a \
 	$(PS2SDK)/ports/lib/libz.a
 
@@ -55,14 +55,13 @@ $(LIB_SDLIMAGE): $(SDLIMAGE_OBJS)
 all: $(LIB_SDLIMAGE)
 
 install: all
-	mkdir -p $(PS2SDK)/ports/include/SDL
-	mkdir -p $(PS2SDK)/ports/lib
-	cp -f $(LIB_SDLIMAGE) $(PS2SDK)/ports/lib
-	cp -f include/*.h $(PS2SDK)/ports/include/SDL
+	mkdir -p $(DESTDIR)$(PS2SDK)/ports/include/SDL
+	mkdir -p $(DESTDIR)$(PS2SDK)/ports/lib
+	cp -f $(LIB_SDLIMAGE) $(DESTDIR)$(PS2SDK)/ports/lib
+	cp -f include/*.h $(DESTDIR)$(PS2SDK)/ports/include/SDL
 
 clean:
 	/bin/rm -f $(SDLIMAGE_OBJS) $(LIB_SDLIMAGE)
 
-include $(PS2SDK)/samples/Makefile.pref
-include $(PS2SDK)/samples/Makefile.eeglobal 
-
+include $(PS2SDK)/Defs.make
+include ../Makefile.eeglobal

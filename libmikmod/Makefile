@@ -50,8 +50,8 @@ LIBMIKMOD_OBJS += drivers/freesd_irx.o
 endif
 
 all: $(LIB_LIBMIKMOD) $(EE_BIN)
-	@ECHO ".LIBMIKMOD Built."
-	@ECHO ".Use Makefile.sample to compile & run the sample."
+	@echo ".LIBMIKMOD Built."
+	@echo ".Use Makefile.sample to compile & run the sample."
 
 EMBEDDED += \
         $(PS2SDK)/ee/lib/libaudsrv.a
@@ -68,10 +68,10 @@ $(LIB_LIBMIKMOD): $(LIBMIKMOD_OBJS)
 
 
 install: all
-	mkdir -p $(PS2SDK)/ports/include
-	mkdir -p $(PS2SDK)/ports/lib
-	cp include/mikmod_build.h $(PS2SDK)/ports/include/mikmod.h
-	cp $(LIB_LIBMIKMOD) $(PS2SDK)/ports/lib
+	mkdir -p $(DESTDIR)$(PS2SDK)/ports/include
+	mkdir -p $(DESTDIR)$(PS2SDK)/ports/lib
+	cp include/mikmod_build.h $(DESTDIR)$(PS2SDK)/ports/include/mikmod.h
+	cp $(LIB_LIBMIKMOD) $(DESTDIR)$(PS2SDK)/ports/lib
 
 
 clean:
@@ -88,6 +88,5 @@ drivers/audsrv_irx.o : $(PS2SDK)/iop/irx/audsrv.irx
 	$(PS2SDK)/bin/bin2o $< $@ audsrv_irx
 
 
-include Makefile.pref
-include Makefile.eeglobal 
-
+include $(PS2SDK)/Defs.make
+include ../Makefile.eeglobal

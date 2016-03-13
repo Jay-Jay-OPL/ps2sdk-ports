@@ -22,14 +22,14 @@ all: $(EE_LIB)
 	$(MAKE) -C  Test all
 
 install: all
-	mkdir -p $(PS2SDK)/ports/include/SDL
-	mkdir -p $(PS2SDK)/ports/lib
-	cp -f $(EE_LIB) $(PS2SDK)/ports/lib
-	cp -f *.h $(PS2SDK)/ports/include/SDL
+	mkdir -p $(DESTDIR)$(PS2SDK)/ports/include/SDL
+	mkdir -p $(DESTDIR)$(PS2SDK)/ports/lib
+	cp -f $(EE_LIB) $(DESTDIR)$(PS2SDK)/ports/lib
+	cp -f *.h $(DESTDIR)$(PS2SDK)/ports/include/SDL
 
 clean:
 	/bin/rm -f $(EE_OBJS) $(EE_LIB)
 	$(MAKE) -C  Test clean
 
-include $(PS2SDK)/samples/Makefile.pref
-include $(PS2SDK)/samples/Makefile.eeglobal 
+include $(PS2SDK)/Defs.make
+include ../Makefile.eeglobal
