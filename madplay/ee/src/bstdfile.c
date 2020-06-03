@@ -49,29 +49,15 @@ the hard drive*/
 /****************************************************************************
  * Includes.																*
  ****************************************************************************/
-#include "tamtypes.h"
 #include <stdio.h>
-#include <sifrpc.h>
-#include <sifcmd.h>
-#include "sys/stat.h"
-#include "sys/fcntl.h"
-#include <sys/types.h>
-#include "kernel.h"
-#include "string.h"
-#include "libhdd.h"
-#include "fileio.h"
-#include "iopcontrol.h"
-#include "stdarg.h"
-#include "malloc.h"
-#include "libmc.h"
-#include "iopheap.h"
-#include "sys/ioctl.h"
-#include "fileXio_rpc.h"
-#include "errno.h"
+#include <tamtypes.h>
+#include <malloc.h>
+#include <kernel.h>
+#include <string.h>
+#include <errno.h>
+
 #include "rmalloc.h"
 #include "file.h"
-
-
 #include "bstdfile.h"
 
 /****************************************************************************
@@ -196,7 +182,6 @@ int BstdFileDestroy(bstdfile_t *BstdFile)
 		errno=EBADF;
 		return(1);
 	}
-	//fileXioClose(BstdFile->fp);
 	CloseFile(BstdFile->fp, mediaMode);
 	if (memoryFile)
 	{
@@ -401,9 +386,9 @@ size_t BstdRead(void *UserBuffer, size_t ElementSize, size_t ElementsCount, bstd
 	 * was feeded to the user buffer.
 	 */
 	if (memoryFile)
-		ObtainedSize=readMemory(BstdFile->buffer, BFILE_BUFSIZE, BstdFile);
+		ObtainedSize=readMemory((unsigned char *)BstdFile->buffer, BFILE_BUFSIZE, BstdFile);
 	else
-		ObtainedSize=ReadFile(BstdFile->fp, BstdFile->buffer, BFILE_BUFSIZE, mediaMode);
+		ObtainedSize=ReadFile(BstdFile->fp, (unsigned char *)BstdFile->buffer, BFILE_BUFSIZE, mediaMode);
 
 	if(ObtainedSize==0)
 	{

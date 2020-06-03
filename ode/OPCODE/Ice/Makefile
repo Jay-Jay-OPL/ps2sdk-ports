@@ -1,7 +1,7 @@
-LIBPATH=../../lib
-LIB_ICE=$(LIBPATH)/libice.a
+EE_LIB_DIR=../../lib/
+LIB_ICE=$(EE_LIB_DIR)libice.a
 
-EE_CFLAGS = -DDISABLE_TIMERS
+EE_CFLAGS += -DDISABLE_TIMERS
 EE_CFLAGS += -DNO_SIGNAL_H -DDEBUG_ERROR -DDEBUG_VIDEO -DUSE_MATH_H
 EE_CFLAGS += -DENABLE_PS2SDK
 
@@ -25,5 +25,5 @@ install: all
 clean:
 	rm -f $(LIB_ICE) $(LIB_ICEMAIN) $(ICE_OBJS)
 
-include $(PS2SDK)/Defs.make
-include ../../../Makefile.eeglobal
+include $(PS2SDK)/samples/Makefile.pref
+include $(PS2SDK)/samples/Makefile.eeglobal

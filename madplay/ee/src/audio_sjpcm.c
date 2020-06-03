@@ -23,8 +23,7 @@
 #  include "config.h"
 # endif
 
-# include "global.h"
-
+# include <stdio.h>
 # include <unistd.h>
 # include <errno.h>
 # include <sjpcm.h>
@@ -46,6 +45,8 @@
 #include <sifcmd.h>
 #include <loadfile.h>
 
+# include "global.h"
+
 typedef void (*functionPointer)();
 
 extern void *_gp;
@@ -66,8 +67,10 @@ int handlerId __attribute__((aligned (16))); // vsync interrupt handler
 
 int playing __attribute__((aligned(16))) = 0;
 
-extern u8 *isjpcm_irx;
-extern int size_isjpcm_irx;
+//extern u8 *isjpcm_irx;
+//extern int size_isjpcm_irx;
+extern unsigned int size_isjpcm_irx;
+extern unsigned char isjpcm_irx;
 
 int loadModules()
 {
@@ -248,7 +251,7 @@ int output(unsigned short const *leftptr, unsigned short const *rightptr, signed
 
 			} else {
 
-				SjPCM_Enqueue(leftptr, rightptr, TICK_SIZE, 1); 
+				SjPCM_Enqueue((short int *)leftptr, (short int *)rightptr, TICK_SIZE, 1); 
 
 			}
 

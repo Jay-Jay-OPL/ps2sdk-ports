@@ -1,4 +1,4 @@
-EE_BINS = \
+BINS = \
 	test_ode.elf \
 	test_buggy.elf \
 	test_chain1.elf \
@@ -15,20 +15,25 @@ EE_BINS = \
 	test_moving_trimesh.elf \
 	test_trimesh.elf \
 	test_step.elf \
-	test_I.elf 
+	test_I.elf
 
 
-EE_OBJS = 
-EE_INCS = -I../include
-EE_LIBS = -lode -lopcode -lice -ldrawstuff -lm -ldreamgl -lpad
-EE_LDFLAGS = -L$(PS2DEV)/dreamgl/lib 
+OBJS =
+EE_INCS += -I../../include
+EE_LIBS += -lode -lopcode -lice -ldrawstuff -ldreamgl -lpad
+EE_LDFLAGS += -L$(PS2DEV)/dreamgl/lib  -L../../lib
 
-all: $(EE_BINS)
+all: $(BINS)
 
 install:
 
-clean:
-	rm -f $(EE_BINS) $(EE_OBJS)
+%.elf : %.o
+	$(EE_CC) $(EE_CFLAGS) -o $@ $< $(EE_LDFLAGS) $(EE_LIBS)
+	$(EE_STRIP) $@
 
-include $(PS2SDK)/Defs.make
-include ../../../Makefile.eeglobal
+clean:
+	rm -f $(BINS) $(OBJS)
+
+include $(PS2SDK)/samples/Makefile.pref
+include $(PS2SDK)/samples/Makefile.eeglobal
+

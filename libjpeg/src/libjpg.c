@@ -10,8 +10,8 @@
 #include <string.h>
 #include <malloc.h>
 #include <stdio.h>
+#include <fcntl.h>
 #include <screenshot.h>
-#include <fileXio_rpc.h>
 
 #include "libjpg.h"
 #include "jpeglib.h"
@@ -40,8 +40,8 @@ typedef struct {
 	
 	custom_error_mgr jerr;
 
-	struct jpeg_source_mgr jsrc;
-	_destination_mgr jdst;
+	struct jpeg_source_mgr *jsrc;
+	_destination_mgr *jdst;
 
 	JSAMPLE *buffer;
 	u8 *data;
@@ -135,6 +135,7 @@ jpgData *jpgOpenRAW( u8 *data, int size, int mode )
 	if( priv == NULL )
 		return NULL;
 
+	memset( priv, 0, sizeof(jpgPrivate) );
 	jpg->priv	= priv;
 	dinfo		= &priv->dinfo;
   
@@ -154,14 +155,14 @@ jpgData *jpgOpenRAW( u8 *data, int size, int mode )
 	jpeg_create_decompress(dinfo);
 
 	/* Specify data source for decompression */
-	priv->jsrc.next_input_byte   = data;
-	priv->jsrc.bytes_in_buffer   = size;
-	priv->jsrc.init_source       = _src_init_source;
-	priv->jsrc.fill_input_buffer = _src_fill_input_buffer;
-	priv->jsrc.skip_input_data   = _src_skip_input_data;
-	priv->jsrc.resync_to_restart = _src_resync_to_restart;
-	priv->jsrc.term_source       = _src_term_source;
-	dinfo->src = &priv->jsrc;
+	priv->jsrc->next_input_byte   = data;
+	priv->jsrc->bytes_in_buffer   = size;
+	priv->jsrc->init_source       = _src_init_source;
+	priv->jsrc->fill_input_buffer = _src_fill_input_buffer;
+	priv->jsrc->skip_input_data   = _src_skip_input_data;
+	priv->jsrc->resync_to_restart = _src_resync_to_restart;
+	priv->jsrc->term_source       = _src_term_source;
+	dinfo->src = priv->jsrc;
 
 	/* Read file header, set default decompression parameters */
 	jpeg_read_header(dinfo, TRUE);
@@ -196,21 +197,21 @@ jpgData *jpgOpen( char *filename, int mode )
 	int size;
 	int fd;
 
-	fd = fileXioOpen( filename, O_RDONLY, 0 );
+	fd = open( filename, O_RDONLY, 0 );
 	if( fd == -1 ) {
 		printf("jpgOpen: error opening '%s'\n", filename);
 		return NULL;
 	}
 	
-	size = fileXioLseek( fd, 0, SEEK_END );
-	fileXioLseek( fd, 0, SEEK_SET );
+	size = lseek( fd, 0, SEEK_END );
+	lseek( fd, 0, SEEK_SET );
 	
 	data = (u8*)malloc(size);
 	if( data == NULL )
 		return NULL;
 	
-	fileXioRead( fd, data, size );
-	fileXioClose(fd);
+	read( fd, data, size );
+	close(fd);
 
 	jpg = jpgOpenRAW( data, size, mode );
 	if( jpg == NULL )
@@ -308,6 +309,7 @@ jpgData *jpgCreateRAW( u8 *data, int width, int height, int bpp )
 	if( priv == NULL )
 		return NULL;
 
+	memset( priv, 0, sizeof(jpgPrivate) );
 	jpg->priv = priv;
 	cinfo = &priv->cinfo;
 
@@ -320,12 +322,12 @@ jpgData *jpgCreateRAW( u8 *data, int width, int height, int bpp )
 	if( priv->buffer == NULL )
 		return NULL;
 	
-	priv->jdst.pub.next_output_byte		= priv->buffer;
-	priv->jdst.pub.free_in_buffer		= OUTPUT_BUF_SIZE;
-	priv->jdst.pub.init_destination		= _dest_init_destination;
-	priv->jdst.pub.empty_output_buffer	= _dest_empty_output_buffer;
-	priv->jdst.pub.term_destination		= _dest_term_destination;
-	priv->jdst.buffer					= priv->buffer;
+	priv->jdst->pub.next_output_byte		= priv->buffer;
+	priv->jdst->pub.free_in_buffer		= OUTPUT_BUF_SIZE;
+	priv->jdst->pub.init_destination		= _dest_init_destination;
+	priv->jdst->pub.empty_output_buffer	= _dest_empty_output_buffer;
+	priv->jdst->pub.term_destination		= _dest_term_destination;
+	priv->jdst->buffer					= priv->buffer;
 
 	/* Specify data source for decompression */
 	cinfo->dest = (struct jpeg_destination_mgr *)&priv->jdst;
@@ -403,7 +405,7 @@ int jpgScreenshot( const char* pFilename,unsigned int VramAdress, unsigned int W
 	u8 *data;
 	int ret;
 
-	file_handle = fileXioOpen( pFilename, O_CREAT | O_WRONLY, 0 );
+	file_handle = open( pFilename, O_CREAT | O_WRONLY, 0 );
 
 	// make sure we could open the file for output
 	if( file_handle < 0 )
@@ -464,7 +466,7 @@ int jpgScreenshot( const char* pFilename,unsigned int VramAdress, unsigned int W
 					u8 g = *p_in++;
 					u8 b = *p_in++;
 					
-					*p_in++;
+					p_in++;
 					
 					p_out[x*3+0] = r;
 					p_out[x*3+1] = g;
@@ -478,10 +480,10 @@ int jpgScreenshot( const char* pFilename,unsigned int VramAdress, unsigned int W
 	jpg = jpgCreateRAW(out_buffer, Width, Height, 24);
 	ret = jpgCompressImageRAW(jpg, &data);
 	
-	fileXioWrite( file_handle, data, ret );
+	write( file_handle, data, ret );
 	jpgClose(jpg);
 
-	fileXioClose( file_handle );
+	close( file_handle );
 	free(out_buffer);
 
 	return 0;
@@ -574,6 +576,7 @@ jpgData *jpgOpenFILE( FILE *in_file, int mode )
 	if( priv == NULL )
 		return NULL;
 
+	memset( priv, 0, sizeof(jpgPrivate) );
 	jpg->priv	= priv;
 	dinfo		= &priv->dinfo;
   
@@ -602,7 +605,7 @@ jpgData *jpgOpenFILE( FILE *in_file, int mode )
 
   /* Specify data source for decompression */
   jpeg_stdio_src(dinfo, in_file);
-	memcpy(&priv->jsrc, dinfo->src, sizeof(struct jpeg_source_mgr));
+	priv->jsrc = dinfo->src;
 
   /* Read file header, set default decompression parameters */
 	jpeg_read_header(dinfo, TRUE);

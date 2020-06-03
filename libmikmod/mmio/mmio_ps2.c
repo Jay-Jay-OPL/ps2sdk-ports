@@ -67,6 +67,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 
 #include "mikmod_internals.h"
 
@@ -100,7 +101,7 @@ FILE* _mm_fopen(CHAR* fname,CHAR* attrib)
         }         
 
         // load content into our buffer
-        fbuf = (char *)memalign(64, fsize);
+        fbuf = (unsigned char *)memalign(64, fsize);
         fread(fbuf, fsize, 1, fp);
         // set file pointer back to start
         foffset = 0;
